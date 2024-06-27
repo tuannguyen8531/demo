@@ -1,7 +1,7 @@
 # Get started
-`bash
+```bash
 docker compose up -d --build
-`
+```
 # Login to pgAdmin
 `
 localhost:5050
