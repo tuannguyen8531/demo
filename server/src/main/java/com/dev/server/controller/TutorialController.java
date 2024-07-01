@@ -20,6 +20,8 @@ import com.dev.server.exception.AppException;
 import com.dev.server.exception.GlobalExceptionHandler.ErrorResponse;
 import com.dev.server.service.TutorialService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1")
 public class TutorialController {
@@ -65,7 +67,7 @@ public class TutorialController {
     }
 
     @PostMapping(path = "/tutorial")
-    public ResponseEntity<?> addNewTutorial(@RequestBody TutorialDTO tutorial) {
+    public ResponseEntity<?> addNewTutorial(@Valid @RequestBody TutorialDTO tutorial) {
         try {
             TutorialDTO newTutorial = this.tutorialService.createTutorial(tutorial);
             return new ResponseEntity<>(newTutorial, HttpStatus.CREATED);

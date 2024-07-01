@@ -61,6 +61,16 @@ public class TutorialService {
     public TutorialDTO updateTutorial(Long id, TutorialDTO tutorial) {
         Tutorial existingTutorial = tutorialRepository.findTutorialById(id)
                 .orElseThrow(() -> new AppException("Tutorial with id " + id + " does not exist", 404));
+        if (!existingTutorial.getTitle().equals(tutorial.getTitle())) {
+            Optional<Tutorial> tutorialOptional = tutorialRepository.findTutorialByTitle(tutorial.getTitle());
+            if (tutorialOptional.isPresent()) {
+                throw new AppException("Tutorial with title " + tutorial.getTitle() + " already exists", 409);
+            }
+        } else if (tutorial.getTitle() == null || tutorial.getTitle().isEmpty()) {
+            throw new AppException("Title is required", 400);
+        } else if (tutorial.getDescription() == null || tutorial.getDescription().isEmpty()) {
+            throw new AppException("Description is required", 400);
+        }
         existingTutorial.setTitle(tutorial.getTitle());
         existingTutorial.setDescription(tutorial.getDescription());
         existingTutorial.setPublished(tutorial.isPublished());
