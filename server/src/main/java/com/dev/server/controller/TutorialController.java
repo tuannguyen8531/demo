@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dev.server.dto.TutorialDTO;
+import com.dev.server.exception.AppException;
+import com.dev.server.exception.GlobalExceptionHandler.ErrorResponse;
 import com.dev.server.service.TutorialService;
 
 @RestController
@@ -30,7 +32,7 @@ public class TutorialController {
     
     // Get all tutorials
     @GetMapping(path = "/tutorial")
-    public ResponseEntity<List<TutorialDTO>> getAllTutorials(@RequestParam(required = false) String title) {
+    public ResponseEntity<?> getAllTutorials(@RequestParam(required = false) String title) {
         try {
             List<TutorialDTO> tutorials = new ArrayList<TutorialDTO>();
             if (title == null) {
@@ -42,52 +44,56 @@ public class TutorialController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(tutorials, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (AppException e) {
+            ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode(), e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
         }
     }
 
     @GetMapping(path = "/tutorial/{id}")
-    public ResponseEntity<TutorialDTO> getTutorialById(@PathVariable Long id) {
+    public ResponseEntity<?> getTutorialById(@PathVariable Long id) {
         try {
             TutorialDTO tutorial = this.tutorialService.getTutorialById(id);
             if (tutorial == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(tutorial, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (AppException e) {
+            ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode(), e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
         }
     }
 
     @PostMapping(path = "/tutorial")
-    public ResponseEntity<TutorialDTO> addNewTutorial(@RequestBody TutorialDTO tutorial) {
+    public ResponseEntity<?> addNewTutorial(@RequestBody TutorialDTO tutorial) {
         try {
             TutorialDTO newTutorial = this.tutorialService.createTutorial(tutorial);
             return new ResponseEntity<>(newTutorial, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (AppException e) {
+            ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode(), e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
         }
     }
 
     @PatchMapping(path = "/tutorial/{id}")
-    public ResponseEntity<TutorialDTO> updateTutorial(@PathVariable Long id, @RequestBody TutorialDTO tutorial) {
+    public ResponseEntity<?> updateTutorial(@PathVariable Long id, @RequestBody TutorialDTO tutorial) {
         try {
             TutorialDTO updatedTutorial = this.tutorialService.updateTutorial(id, tutorial);
             return new ResponseEntity<>(updatedTutorial, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (AppException e) {
+            ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode(), e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
         }
     }
 
     @PatchMapping(path = "/tutorial/{id}/delete")
-    public ResponseEntity<HttpStatus> deleteTutorial(@PathVariable Long id) {
+    public ResponseEntity<?> deleteTutorial(@PathVariable Long id) {
         try {
             this.tutorialService.deleteTutorial(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (AppException e) {
+            ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode(), e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
         }
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.dev.server.model.Tutorial;
 import com.dev.server.dto.TutorialDTO;
+import com.dev.server.exception.AppException;
 import com.dev.server.repository.TutorialRepository;
 
 @Service
@@ -43,7 +44,7 @@ public class TutorialService {
     public TutorialDTO getTutorialById(Long id) {
         Optional<Tutorial> tutorialOptional = tutorialRepository.findTutorialById(id);
         if (tutorialOptional.isEmpty()) {
-            throw new IllegalStateException("Tutorial with id " + id + " does not exist");
+            throw new AppException("Tutorial with id " + id + " does not exist", 404);
         }
         return convertToDTO(tutorialOptional.get());
     }
@@ -51,7 +52,7 @@ public class TutorialService {
     public TutorialDTO createTutorial(TutorialDTO tutorial) {
         Optional<Tutorial> tutorialOptional = tutorialRepository.findTutorialByTitle(tutorial.getTitle());
         if (tutorialOptional.isPresent()) {
-            throw new IllegalStateException("Tutorial with title " + tutorial.getTitle() + " already exists");
+            throw new AppException("Tutorial with title " + tutorial.getTitle() + " already exists", 409);
         }
         Tutorial newTutorial = new Tutorial(tutorial.getTitle(), tutorial.getDescription(), tutorial.isPublished());
         return convertToDTO(tutorialRepository.save(newTutorial));
@@ -59,7 +60,7 @@ public class TutorialService {
 
     public TutorialDTO updateTutorial(Long id, TutorialDTO tutorial) {
         Tutorial existingTutorial = tutorialRepository.findTutorialById(id)
-                .orElseThrow(() -> new IllegalStateException("Tutorial with id " + id + " does not exist"));
+                .orElseThrow(() -> new AppException("Tutorial with id " + id + " does not exist", 404));
         existingTutorial.setTitle(tutorial.getTitle());
         existingTutorial.setDescription(tutorial.getDescription());
         existingTutorial.setPublished(tutorial.isPublished());
@@ -68,7 +69,7 @@ public class TutorialService {
 
     public void deleteTutorial(Long id) {
         Tutorial existingTutorial = tutorialRepository.findTutorialById(id)
-                .orElseThrow(() -> new IllegalStateException("Tutorial with id " + id + " does not exist"));
+                .orElseThrow(() -> new AppException("Tutorial with id " + id + " does not exist", 404));
         existingTutorial.setDeletedFlg(true);
         tutorialRepository.save(existingTutorial);
     }
