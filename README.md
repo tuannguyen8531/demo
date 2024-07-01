@@ -13,7 +13,7 @@ localhost:5050
 Add new server
  - Host: postgres
  - User: admin
- - Password: 
+ - Password: admin
  
  # Update code 
  ```bash
