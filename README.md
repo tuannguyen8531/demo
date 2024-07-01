@@ -13,4 +13,9 @@ localhost:5050
 Add new server
  - Host: postgres
  - User: admin
- - Password: admin
+ - Password: 
+ 
+ # Update code 
+ ```bash
+docker-compose down && docker image rm -f demo-backend && docker-compose up -d
+ ```
