@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dev.server.model.Tutorial;
+import com.dev.server.dto.TutorialDTO;
 import com.dev.server.repository.TutorialRepository;
 
 @Service
@@ -18,35 +19,62 @@ public class TutorialService {
         this.tutorialRepository = tutorialRepository;
     }
 
-    public List<Tutorial> getAllTutorials() {
-        return tutorialRepository.findAll();
+    public List<TutorialDTO> getAllTutorials() {
+        return tutorialRepository.findAllTutorials()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
-    public List<Tutorial> getPublishedTutorials() {
-        return tutorialRepository.findByPublished(true);
+    public List<TutorialDTO> getPublishedTutorials() {
+        return tutorialRepository.findTutorialByPublished(true)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
-    public List<Tutorial> getTutorialsByTitle(String title) {
-        return tutorialRepository.findByTitleContaining(title);
+    public List<TutorialDTO> getTutorialsByTitle(String title) {
+        return tutorialRepository.findTutorialByTitleContaining(title)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
-    public Tutorial getTutorialById(Long id) {
-        return tutorialRepository.findById(id).orElse(null);
-    }
-
-    public Tutorial createTutorial(Tutorial tutorial) {
-        Optional<Tutorial> tutorialOptional = tutorialRepository.findByTitle(tutorial.getTitle());
-        if (tutorialOptional.isPresent()) {
-            throw new IllegalStateException("Title already taken");
+    public TutorialDTO getTutorialById(Long id) {
+        Optional<Tutorial> tutorialOptional = tutorialRepository.findTutorialById(id);
+        if (tutorialOptional.isEmpty()) {
+            throw new IllegalStateException("Tutorial with id " + id + " does not exist");
         }
-        return tutorialRepository.save(tutorial);
+        return convertToDTO(tutorialOptional.get());
+    }
+
+    public TutorialDTO createTutorial(TutorialDTO tutorial) {
+        Optional<Tutorial> tutorialOptional = tutorialRepository.findTutorialByTitle(tutorial.getTitle());
+        if (tutorialOptional.isPresent()) {
+            throw new IllegalStateException("Tutorial with title " + tutorial.getTitle() + " already exists");
+        }
+        Tutorial newTutorial = new Tutorial(tutorial.getTitle(), tutorial.getDescription(), tutorial.isPublished());
+        return convertToDTO(tutorialRepository.save(newTutorial));
+    }
+
+    public TutorialDTO updateTutorial(Long id, TutorialDTO tutorial) {
+        Tutorial existingTutorial = tutorialRepository.findTutorialById(id)
+                .orElseThrow(() -> new IllegalStateException("Tutorial with id " + id + " does not exist"));
+        existingTutorial.setTitle(tutorial.getTitle());
+        existingTutorial.setDescription(tutorial.getDescription());
+        existingTutorial.setPublished(tutorial.isPublished());
+        return convertToDTO(tutorialRepository.save(existingTutorial));
     }
 
     public void deleteTutorial(Long id) {
-        boolean exists = tutorialRepository.existsById(id);
-        if (!exists) {
-            throw new IllegalStateException("Tutorial with id " + id + " does not exist");
-        }
-        tutorialRepository.deleteById(id);
+        Tutorial existingTutorial = tutorialRepository.findTutorialById(id)
+                .orElseThrow(() -> new IllegalStateException("Tutorial with id " + id + " does not exist"));
+        existingTutorial.setDeletedFlg(true);
+        tutorialRepository.save(existingTutorial);
+    }
+
+    private TutorialDTO convertToDTO(Tutorial tutorial) {
+        TutorialDTO tutorialDTO = new TutorialDTO(tutorial.getId(), tutorial.getTitle(), tutorial.getDescription(), tutorial.isPublished());
+        return tutorialDTO;
     }
 }
