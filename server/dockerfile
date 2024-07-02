@@ -12,11 +12,11 @@ COPY src ./src
 
 RUN ./mvnw clean package -DskipTests
 
-FROM openjdk:17-jdk-slim AS production
+FROM openjdk:17-slim AS production
 
 WORKDIR /app
 
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/*.jar /app/app.jar
 RUN chmod 755 /app/app.jar
 
 EXPOSE 8080
