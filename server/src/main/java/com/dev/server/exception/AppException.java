@@ -1,18 +1,22 @@
 package com.dev.server.exception;
 
 public class AppException extends RuntimeException {
-    private int statusCode;
+    private ErrorCode errorCode;
 
-    public AppException(String message) {
-        super(message);
+    public AppException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
 
-    public AppException(String message, int statusCode) {
+    public AppException(ErrorCode errorCode, String message) {
         super(message);
-        this.statusCode = statusCode;
+        this.errorCode = errorCode;
     }
 
-    public int getStatusCode() {
-        return statusCode;
+    public ErrorCode getErrorCode() {
+        return errorCode;
+    }
+    public void setErrorCode(ErrorCode errorCode) {
+        this.errorCode = errorCode;
     }
 }
