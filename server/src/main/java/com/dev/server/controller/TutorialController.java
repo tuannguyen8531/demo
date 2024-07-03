@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dev.server.dto.APIRespone;
-import com.dev.server.dto.TutorialDTO;
+import com.dev.server.dto.TutorialDTO.*;
 import com.dev.server.service.TutorialService;
+import com.dev.server.util.MessageConstant;
 
 import jakarta.validation.Valid;
 
@@ -35,39 +36,39 @@ public class TutorialController {
     // Get all tutorials
     @GetMapping(path = "/tutorial")
     public ResponseEntity<?> getAllTutorials(@RequestParam(required = false) String title) {
-        List<TutorialDTO> tutorials = new ArrayList<TutorialDTO>();
+        List<TutorialRespone> tutorials = new ArrayList<>();
         if (title == null) {
             this.tutorialService.getAllTutorials().forEach(tutorials::add);;
         } else {
             this.tutorialService.getTutorialsByTitle(title).forEach(tutorials::add);
         }
         if (tutorials.isEmpty()) {
-            return new ResponseEntity<>(new APIRespone<>(true, "Data is empty", tutorials), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new APIRespone<>(true, MessageConstant.RESOURCE_EMPTY, tutorials), HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(new APIRespone<>(true, "Data found", tutorials), HttpStatus.OK);
+        return new ResponseEntity<>(new APIRespone<>(true, MessageConstant.RESOURCE_FOUND, tutorials), HttpStatus.OK);
     }
 
     @GetMapping(path = "/tutorial/{id}")
     public ResponseEntity<?> getTutorialById(@PathVariable Long id) {
-        TutorialDTO tutorial = this.tutorialService.getTutorialById(id);
-        return new ResponseEntity<>(new APIRespone<>(true, "Data found", tutorial), HttpStatus.OK);
+        TutorialRespone tutorial = this.tutorialService.getTutorialById(id);
+        return new ResponseEntity<>(new APIRespone<>(true, MessageConstant.RESOURCE_FOUND, tutorial), HttpStatus.OK);
     }
 
     @PostMapping(path = "/tutorial")
-    public ResponseEntity<?> addNewTutorial(@Valid @RequestBody TutorialDTO tutorial) {
-        TutorialDTO newTutorial = this.tutorialService.createTutorial(tutorial);
-        return new ResponseEntity<>(new APIRespone<>(true, "Tutorial has been created", newTutorial), HttpStatus.CREATED);
+    public ResponseEntity<?> addNewTutorial(@Valid @RequestBody TutorialCreateRequest tutorial) {
+        TutorialRespone newTutorial = this.tutorialService.createTutorial(tutorial);
+        return new ResponseEntity<>(new APIRespone<>(true, MessageConstant.TUTORIAL_CREATED, newTutorial), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/tutorial/{id}")
-    public ResponseEntity<?> updateTutorial(@PathVariable Long id, @RequestBody TutorialDTO tutorial) {
-        TutorialDTO updatedTutorial = this.tutorialService.updateTutorial(id, tutorial);
-        return new ResponseEntity<>(new APIRespone<>(true, "Tutorial with id " + id + " has been updated", updatedTutorial), HttpStatus.OK);
+    public ResponseEntity<?> updateTutorial(@PathVariable Long id, @Valid @RequestBody TutorialUpdateRequest tutorial) {
+        TutorialRespone updatedTutorial = this.tutorialService.updateTutorial(id, tutorial);
+        return new ResponseEntity<>(new APIRespone<>(true, MessageConstant.TUTORIAL_UPDATED, updatedTutorial), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/tutorial/{id}/delete")
     public ResponseEntity<?> deleteTutorial(@PathVariable Long id) {
         this.tutorialService.deleteTutorial(id);
-        return new ResponseEntity<>(new APIRespone<>(true, "Tutorial with id " + id + " has been deleted", null), HttpStatus.OK);
+        return new ResponseEntity<>(new APIRespone<>(true, MessageConstant.TUTORIAL_DELETED, null), HttpStatus.OK);
     }
 }

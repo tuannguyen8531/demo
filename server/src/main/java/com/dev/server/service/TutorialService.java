@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dev.server.model.Tutorial;
-import com.dev.server.dto.TutorialDTO;
+import com.dev.server.dto.TutorialDTO.*;
 import com.dev.server.exception.AppException;
 import com.dev.server.exception.ErrorCode;
 import com.dev.server.repository.TutorialRepository;
@@ -21,28 +21,28 @@ public class TutorialService {
         this.tutorialRepository = tutorialRepository;
     }
 
-    public List<TutorialDTO> getAllTutorials() {
+    public List<TutorialRespone> getAllTutorials() {
         return tutorialRepository.findAllTutorials()
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
     }
 
-    public List<TutorialDTO> getPublishedTutorials() {
+    public List<TutorialRespone> getPublishedTutorials() {
         return tutorialRepository.findTutorialByPublished(true)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
     }
 
-    public List<TutorialDTO> getTutorialsByTitle(String title) {
+    public List<TutorialRespone> getTutorialsByTitle(String title) {
         return tutorialRepository.findTutorialByTitleContaining(title)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
     }
 
-    public TutorialDTO getTutorialById(Long id) {
+    public TutorialRespone getTutorialById(Long id) {
         Optional<Tutorial> tutorialOptional = tutorialRepository.findTutorialById(id);
         if (tutorialOptional.isEmpty()) {
             throw new AppException(ErrorCode.RESOURCE_NOT_FOUND);
@@ -50,7 +50,7 @@ public class TutorialService {
         return convertToDTO(tutorialOptional.get());
     }
 
-    public TutorialDTO createTutorial(TutorialDTO tutorial) {
+    public TutorialRespone createTutorial(TutorialCreateRequest tutorial) {
         Optional<Tutorial> tutorialOptional = tutorialRepository.findTutorialByTitle(tutorial.getTitle());
         if (tutorialOptional.isPresent()) {
             throw new AppException(ErrorCode.RESOURCE_ALREADY_EXISTS);
@@ -59,7 +59,7 @@ public class TutorialService {
         return convertToDTO(tutorialRepository.save(newTutorial));
     }
 
-    public TutorialDTO updateTutorial(Long id, TutorialDTO tutorial) {
+    public TutorialRespone updateTutorial(Long id, TutorialUpdateRequest tutorial) {
         Tutorial existingTutorial = tutorialRepository.findTutorialById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
         if (!existingTutorial.getTitle().equals(tutorial.getTitle())) {
@@ -81,8 +81,8 @@ public class TutorialService {
         tutorialRepository.save(existingTutorial);
     }
 
-    private TutorialDTO convertToDTO(Tutorial tutorial) {
-        TutorialDTO tutorialDTO = new TutorialDTO(tutorial.getId(), tutorial.getTitle(), tutorial.getDescription(), tutorial.isPublished());
+    private TutorialRespone convertToDTO(Tutorial tutorial) {
+        TutorialRespone tutorialDTO = new TutorialRespone(tutorial.getId(), tutorial.getTitle(), tutorial.getDescription(), tutorial.isPublished());
         return tutorialDTO;
     }
 }
