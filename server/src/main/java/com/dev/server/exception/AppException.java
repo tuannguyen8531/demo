@@ -1,5 +1,8 @@
 package com.dev.server.exception;
 
+import lombok.*;
+
+@Getter @Setter
 public class AppException extends RuntimeException {
     private ErrorCode errorCode;
 
@@ -10,13 +13,6 @@ public class AppException extends RuntimeException {
 
     public AppException(ErrorCode errorCode, String message) {
         super(message);
-        this.errorCode = errorCode;
-    }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
-    public void setErrorCode(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 }

@@ -1,8 +1,11 @@
 package com.dev.server.model;
 
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.dev.server.util.Constants;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,22 +13,30 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity @Data @NoArgsConstructor @AllArgsConstructor
-@Table(name = "tutorials")
+@Table(name = "admins")
 @EntityListeners(AuditingEntityListener.class)
-public class Tutorial {
-
+public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
 
-    @Column(name = "description", nullable = false)
-    private String description;
+    @Column(name = "username", nullable = false)
+    private String username;
 
-    @Column(name = "published", nullable = false)
-    private boolean published = false;
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "role", nullable = false)
+    private String role = Constants.ROLE_STAFF;
+
+    @Column(name = "role_menu", nullable = true)
+    private String roleMenu;
 
     @Column(name = "deleted_flg", nullable = false)
     private boolean deletedFlg = false;
@@ -38,9 +49,10 @@ public class Tutorial {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Tutorial(String title, String description, boolean published) {
-        this.title = title;
-        this.description = description;
-        this.published = published;
+    public Admin(String fullName, String username, String password, String email) {
+        this.fullName = fullName;
+        this.username = username;
+        this.password = password;
+        this.email = email;
     }
 }
