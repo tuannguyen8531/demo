@@ -10,9 +10,12 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, MessageConstant.UNCATEGORIZED_EXCEPTION, HttpStatus.INTERNAL_SERVER_ERROR),
-    RESOURCE_NOT_FOUND(404, MessageConstant.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND),
-    RESOURCE_ALREADY_EXISTS(409, MessageConstant.RESOURCE_ALREADY_EXISTS, HttpStatus.CONFLICT);
-
+    RESOURCE_NOT_FOUND(1001, MessageConstant.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND),
+    RESOURCE_ALREADY_EXISTS(1002, MessageConstant.RESOURCE_ALREADY_EXISTS, HttpStatus.CONFLICT),
+    INVALID_LOGIN(1003, MessageConstant.INVALID_LOGIN, HttpStatus.UNAUTHORIZED),
+    INVALID_REFRESH_TOKEN(1004, MessageConstant.INVALID_REFRESH_TOKEN, HttpStatus.UNAUTHORIZED),
+    USERNAME_EXISTED(1005, MessageConstant.USERNAME_EXISTED, HttpStatus.CONFLICT),
+    EMAIL_EXISTED(1006, MessageConstant.EMAIL_EXISTED, HttpStatus.CONFLICT);
 
     private final int code;
     private final String message;

@@ -19,4 +19,19 @@ public class MessageConstant {
     public static final String TUTORIAL_UPDATED = "Tutorial has been updated";
     public static final String TUTORIAL_DELETED = "Tutorial has been deleted";
 
+    public static final String INVALID_LOGIN = "Invalid login";
+    public static final String USERNAME_EXISTED = "Username has been taken";
+    public static final String EMAIL_EXISTED = "Email has been taken";
+    public static final String USER_REGISTERED = "User has been registered";
+    public static final String AUTHORIZED = "Authorized";
+    public static final String LOGGED_OUT = "Logged out";
+    public static final String TOKEN_REFRESHED = "Token has been refreshed";
+    public static final String INVALID_REFRESH_TOKEN = "Invalid refresh token";
+
+    public static final String FULL_NAME_REQUIRED = "Full name is required";
+    public static final String FULL_NAME_LENGTH = "Full name must be between 2 and 100 characters";
+    public static final String USERNAME_REQUIRED = "Username is required";
+    public static final String USERNAME_LENGTH = "Username must be between 5 and 20 characters";
+    public static final String USERNAME_PATTERN = "Username must start with a letter and contain only letters, numbers, and underscores";
+    public static final String EMAIL_INVALID = "Email is invalid";
 }

@@ -45,6 +45,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:${DB_PORT}/${DB_DATABASE}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
     volumes:
       - ./server/src:/app/src
     restart: unless-stopped

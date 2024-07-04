@@ -82,7 +82,7 @@ public class TutorialService {
     }
 
     private TutorialRespone convertToDTO(Tutorial tutorial) {
-        TutorialRespone tutorialDTO = new TutorialRespone(tutorial.getId(), tutorial.getTitle(), tutorial.getDescription(), tutorial.isPublished());
-        return tutorialDTO;
+        TutorialRespone tutorialRespone = new TutorialRespone(tutorial.getId(), tutorial.getTitle(), tutorial.getDescription(), tutorial.isPublished());
+        return tutorialRespone;
     }
 }
