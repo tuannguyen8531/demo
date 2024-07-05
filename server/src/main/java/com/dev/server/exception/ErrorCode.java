@@ -15,7 +15,8 @@ public enum ErrorCode {
     INVALID_LOGIN(1003, MessageConstant.INVALID_LOGIN, HttpStatus.UNAUTHORIZED),
     INVALID_REFRESH_TOKEN(1004, MessageConstant.INVALID_REFRESH_TOKEN, HttpStatus.UNAUTHORIZED),
     USERNAME_EXISTED(1005, MessageConstant.USERNAME_EXISTED, HttpStatus.CONFLICT),
-    EMAIL_EXISTED(1006, MessageConstant.EMAIL_EXISTED, HttpStatus.CONFLICT);
+    EMAIL_EXISTED(1006, MessageConstant.EMAIL_EXISTED, HttpStatus.CONFLICT),
+    UNAUTHORIZED(1007, MessageConstant.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
 
     private final int code;
     private final String message;

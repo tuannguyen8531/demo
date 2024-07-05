@@ -3,7 +3,7 @@ package com.dev.server.dto.TutorialDTO;
 import lombok.*;
 
 @Data @NoArgsConstructor @AllArgsConstructor
-public class TutorialRespone {
+public class TutorialResponse {
     private Long id;
     private String title;
     private String description;

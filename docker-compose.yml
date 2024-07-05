@@ -12,13 +12,23 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - demo
 
-  # redis:
-  #   image: redis:latest
-  #   ports:
-  #     - "6379:6379"
-  #   container_name: redis
-  #   restart: unless-stopped
+  redis:
+    image: redis:latest
+    ports:
+      - ${REDIS_PORT}:6379
+    container_name: redis
+    restart: always
+    hostname: redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PORT: ${REDIS_PORT}
+    volumes:
+      - redis_data:/data
+    networks:
+      - demo
 
   # frontend:
   #   build:
@@ -42,14 +52,20 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:${DB_PORT}/${DB_DATABASE}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_EXPIRATION: ${REDIS_EXPIRATION}
     volumes:
       - ./server/src:/app/src
     restart: unless-stopped
+    networks:
+      - demo
 
   pgadmin:
     image: dpage/pgadmin4
@@ -64,7 +80,14 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     restart: unless-stopped
+    networks:
+      - demo
 
 volumes:
   postgres_data:
   pgadmin_data:
+  redis_data:
+
+networks:
+  demo:
+    driver: bridge

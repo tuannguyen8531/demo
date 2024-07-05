@@ -3,7 +3,7 @@ package com.dev.server.dto.AdminDTO;
 import lombok.*;
 
 @Data @NoArgsConstructor @AllArgsConstructor
-public class AdminRespone {
+public class AdminResponse {
     private Long id;
     private String fullName;
     private String username;

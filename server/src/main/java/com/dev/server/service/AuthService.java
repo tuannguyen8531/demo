@@ -4,24 +4,23 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.dev.server.dto.AdminDTO.AdminRespone;
+import com.dev.server.dto.AdminDTO.AdminResponse;
 import com.dev.server.dto.AuthDTO.AuthLoginRequest;
 import com.dev.server.dto.AuthDTO.AuthRegisterRequest;
-import com.dev.server.dto.AuthDTO.AuthRespone;
+import com.dev.server.dto.AuthDTO.AuthResponse;
 import com.dev.server.exception.AppException;
 import com.dev.server.exception.ErrorCode;
 import com.dev.server.model.Admin;
 import com.dev.server.repository.AdminRepository;
 import com.dev.server.util.Helper;
 
-import lombok.RequiredArgsConstructor;
-
-@Service @RequiredArgsConstructor
+@Service
 public class AuthService {
     @Value("${security.refresh.length}")
     private int refreshTokenLength;
@@ -33,8 +32,17 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final RedisService redisService;
 
-    public AdminRespone register(AuthRegisterRequest request) {
+    public AuthService(@Lazy AuthenticationManager authenticationManager, AdminRepository repository, PasswordEncoder passwordEncoder, JwtService jwtService, RedisService redisService) {
+        this.authenticationManager = authenticationManager;
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.redisService = redisService;
+    }
+
+    public AdminResponse register(AuthRegisterRequest request) {
         Optional<Admin> admin = repository.findByUsername(request.getUsername());
         if (admin.isPresent()) {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
@@ -47,7 +55,7 @@ public class AuthService {
         return convertToDTO(repository.save(newAdmin));
     }
 
-    public AuthRespone login(AuthLoginRequest request) {
+    public AuthResponse login(AuthLoginRequest request) {
         Optional<Admin> admin = repository.findByUsername(request.getUsername());
         if (admin.isEmpty() || !passwordEncoder.matches(request.getPassword(), admin.get().getPassword())) {
             throw new AppException(ErrorCode.INVALID_LOGIN);
@@ -60,14 +68,15 @@ public class AuthService {
         admin.get().setRefreshTokenExpiration(LocalDateTime.now().plusSeconds(this.refreshTokenExpiration));
         repository.save(admin.get());
         String token = jwtService.generateToken(admin.get());
-        AuthRespone authRespone = new AuthRespone(token, jwtService.getExpirationTime(), refreshToken);
-        return authRespone;
+        AuthResponse authResponse = new AuthResponse(token, jwtService.getExpirationTime(), refreshToken);
+        return authResponse;
     }
 
     public void logout(String refreshToken) {
         Admin admin = repository.findByRefreshToken(refreshToken).orElseThrow(() -> new AppException(ErrorCode.INVALID_REFRESH_TOKEN));
         admin.setRefreshToken(null);
         admin.setRefreshTokenExpiration(null);
+        this.redisService.addToBlacklist(refreshToken);
         repository.save(admin);
     }
 
@@ -85,18 +94,18 @@ public class AuthService {
             .isPresent();
     }
 
-    public AuthRespone refresh(String refreshToken) {
+    public AuthResponse refresh(String refreshToken) {
         if (!validateRefreshToken(refreshToken)) {
             throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
         Admin admin = repository.findByRefreshToken(refreshToken).orElseThrow(() -> new AppException(ErrorCode.INVALID_REFRESH_TOKEN));
         String token = jwtService.generateToken(admin);
-        AuthRespone authRespone = new AuthRespone(token, jwtService.getExpirationTime(), refreshToken);
-        return authRespone;
+        AuthResponse authResponse = new AuthResponse(token, jwtService.getExpirationTime(), refreshToken);
+        return authResponse;
     }
 
-    public AdminRespone convertToDTO(Admin admin) {
-        AdminRespone adminRespone = new AdminRespone(admin.getId(), admin.getFullName(), admin.getUsername(), admin.getEmail(), admin.getRole().name(), admin.getRoleMenu());
-        return adminRespone;
+    public AdminResponse convertToDTO(Admin admin) {
+        AdminResponse adminResponse = new AdminResponse(admin.getId(), admin.getFullName(), admin.getUsername(), admin.getEmail(), admin.getRole().name(), admin.getRoleMenu());
+        return adminResponse;
     }
 }

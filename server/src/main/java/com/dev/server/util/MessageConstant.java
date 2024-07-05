@@ -9,6 +9,7 @@ public class MessageConstant {
     public static final String UNAUTHORIZED = "Unauthorized";
     public static final String UNCATEGORIZED_EXCEPTION = "Uncategorized error";
     public static final String INVALID_REQUEST = "Invalid request";
+    public static final String TOKEN_BLACKLISTED = "Token has been blacklisted";
 
     public static final String TITLE_REQUIRED = "Title is required";
     public static final String TITLE_LENGTH = "Title must be between 3 and 100 characters"; 

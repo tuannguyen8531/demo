@@ -6,19 +6,19 @@ import lombok.*;
 
 @Data @NoArgsConstructor @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class APIRespone<T> {
+public class APIResponse<T> {
     private boolean success;
     private String message;
     private Integer error_code;
     private T data;
 
-    public APIRespone(boolean success, String message, T data) {
+    public APIResponse(boolean success, String message, T data) {
         this.success = success;
         this.message = message;
         this.data = data;
     }
 
-    public APIRespone(boolean success, String message, int error_code) {
+    public APIResponse(boolean success, String message, int error_code) {
         this.success = success;
         this.message = message;
         this.error_code = error_code;
