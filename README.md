@@ -15,7 +15,12 @@ Add new server
  - User: admin
  - Password: admin
  
- # Update code 
+# Update code 
  ```bash
 docker-compose down && docker image rm -f demo-backend && docker-compose up -d
  ```
+
+# Documents UI
+`
+http://127.0.0.1:8080/swagger-ui/index.html
+`
