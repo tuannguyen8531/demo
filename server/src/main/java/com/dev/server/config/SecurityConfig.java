@@ -38,7 +38,7 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .logout(logout -> logout
-                .logoutUrl("/api/v1/auth/logout")
+                .logoutUrl("/api/v1/admin/logout")
                 .invalidateHttpSession(true)
                 .addLogoutHandler(signoutHandler)
                 .logoutSuccessHandler(signoutHandler)

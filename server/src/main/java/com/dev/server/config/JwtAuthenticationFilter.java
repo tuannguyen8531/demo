@@ -1,7 +1,6 @@
 package com.dev.server.config;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -11,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
@@ -41,9 +41,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse response, 
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        if (Arrays.asList(Constants.AUTH_WHITELIST).contains(request.getRequestURI())) {
-            filterChain.doFilter(request, response);
-            return;
+        AntPathMatcher pathMatcher = new AntPathMatcher();
+        for (String pattern : Constants.AUTH_WHITELIST) {
+            if (pathMatcher.match(pattern, request.getRequestURI())) {
+                filterChain.doFilter(request, response);
+                return;
+            }
         }
         final String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
